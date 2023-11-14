@@ -3,6 +3,7 @@ import os
 import psutil
 import HashingValidator
 import FragChecker
+import PerformanceTracker
 
 
 def create_volume(drive_letter, new_volume_label):
@@ -65,6 +66,9 @@ def main():
         print(f"Fragmentation on {drive_to_check}: {fragmentation_percent}%")
     else:
         print(f"Drive {drive_to_check} was not found or an error occurred..")
+
+    tracker = PerformanceTracker.PerformanceTracker()
+    tracker.track_performance()
 
 
 if __name__ == "__main__":
