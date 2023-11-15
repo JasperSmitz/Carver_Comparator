@@ -7,6 +7,7 @@ class PerformanceTracker:
     def __init__(self):
         self.start_time = None
         self.end_time = None
+        self.elapsed_time = None
 
     def start_timer(self):
         print("Waiting for the next click to start the timer...")
@@ -17,8 +18,8 @@ class PerformanceTracker:
     def stop_timer(self):
         if self.start_time is not None:
             self.end_time = time.time()
-            elapsed_time = self.end_time - self.start_time
-            print(f"Timer stopped. Elapsed time: {elapsed_time:.2f} seconds")
+            self.elapsed_time = self.end_time - self.start_time
+            print(f"Timer stopped. Elapsed time: {self.elapsed_time:.2f} seconds")
             self.start_time = None
         else:
             print("Timer is not started.")
