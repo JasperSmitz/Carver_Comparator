@@ -10,12 +10,20 @@ class PerformanceTracker:
         self.elapsed_time = None
 
     def start_timer(self):
+        """
+        Start the timer on the next mouse click.
+
+        """
         print("Waiting for the next click to start the timer...")
         mouse.wait(button="left")  # Wait for the next mouse click
         self.start_time = time.time()
         print("Timer started. Press any key to stop.")
 
     def stop_timer(self):
+        """
+        Stop the timer (if the timer has started).
+
+        """
         if self.start_time is not None:
             self.end_time = time.time()
             self.elapsed_time = self.end_time - self.start_time
@@ -25,6 +33,10 @@ class PerformanceTracker:
             print("Timer is not started.")
 
     def track_performance(self):
+        """
+        Track the time until a key is pressed.
+
+        """
         self.start_timer()
 
         print("Performance tracking in progress...")

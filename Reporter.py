@@ -11,8 +11,8 @@ class Reporter:
         Create a table with the given name and data.
 
         Args:
-            table_name (str): Name of the table.
-            data (dict): Dictionary containing the data for the table.
+            table_name (string): Name of the table.
+            data (dictionary): Dictionary containing the data for the table.
                          Keys are column names, and values are lists of data for each column.
         """
         if table_name in self.tables:
@@ -28,7 +28,7 @@ class Reporter:
         Export all tables to an Excel file.
 
         Args:
-            file_name (str): Name of the Excel file (including extension).
+            file_name (string): Name of the Excel file including extension (.xlsx).
         """
         if not file_name.endswith('.xlsx'):
             file_name += '.xlsx'
@@ -49,7 +49,7 @@ class Reporter:
         comparison_data = {
             'File Name': list(folder_hasher.original_hashes.keys()),
             'Original Hash': list(folder_hasher.original_hashes.values()),
-            'Recovered Hash Present': [
+            'Fully Recovered': [
                 hash_value in folder_hasher.recovered_hashes.values()
                 for hash_value in folder_hasher.original_hashes.values()
             ]
