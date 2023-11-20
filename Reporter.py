@@ -52,6 +52,8 @@ class Reporter:
             'Fully Recovered': [
                 hash_value in folder_hasher.recovered_hashes.values()
                 for hash_value in folder_hasher.original_hashes.values()
-            ]
+            ],
+            'Partially Recovered': [None] * len(folder_hasher.original_hashes),
+            'Not recovered': [None] * len(folder_hasher.original_hashes)
         }
         self.create_table('Comparison', comparison_data)

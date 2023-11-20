@@ -22,7 +22,6 @@ class FolderHasher:
                 file_path = os.path.join(root, file)
                 file_hash = self.hash_file(file_path)
                 self.original_hashes[file_path] = file_hash
-        print(self.original_hashes)
 
     def hash_file(self, file_path):
         """
@@ -53,7 +52,6 @@ class FolderHasher:
                 file_path = os.path.join(root, file)
                 file_hash = self.hash_file(file_path)
                 self.recovered_hashes[file_path] = file_hash
-        print(self.recovered_hashes)
         correctly_recovered = 0
         for file_path, original_hash in self.original_hashes.items():
             if original_hash in self.recovered_hashes.values():
