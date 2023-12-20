@@ -1,5 +1,4 @@
 import HashingValidator
-import FragChecker
 import PerformanceTracker
 import Reporter
 import TestPrep
@@ -7,10 +6,10 @@ import TestPrep
 
 def get_test_set_path():
     while True:
-        test_type = input("Do you want to test baseline or progressive JPEGs?\n").lower()
-        if test_type == "baseline":
+        test_type = input("Do you want to test baseline or progressive JPEGs?\n0. Baseline\n1. Progressive").lower()
+        if test_type == "0":
             return "Test set/Baseline set"
-        elif test_type == "progressive":
+        elif test_type == "1":
             return "Test set/Progressive set"
         else:
             print("Incorrect test type. Please enter 'baseline' or 'progressive'.")
@@ -32,11 +31,13 @@ def main():
     folder_hasher = HashingValidator.FolderHasher()
     folder_hasher.hash_folder(test_set_path)
 
-    print("Please make sure the test set volume is formatted.")
+    fragments = int(input("In how many fragments would you like each file to be split?"))
+    in_order = bool(int(input("In-order or out-of-order?\n0. Out-of-order\n1. In-order\n")))
+    print("Please make sure the test volume is formatted.")
 
     destination_path = get_destination_path()
-    testprep = TestPrep.TestPrep(test_set_path, destination_path)
-    testprep.copy_to_external_drive()
+    testprep = TestPrep.TestPrep(test_set_path, destination_path, fragments, in_order)
+    testprep.prepare_data()
 
     input("Please delete the files in the selected drive.\nPress Enter to continue...")
 

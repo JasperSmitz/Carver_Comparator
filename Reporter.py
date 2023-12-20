@@ -54,6 +54,9 @@ class Reporter:
                 for hash_value in folder_hasher.original_hashes.values()
             ],
             'Partially Recovered': [None] * len(folder_hasher.original_hashes),
-            'Not recovered': [None] * len(folder_hasher.original_hashes)
+            'Not Recovered': [None] * len(folder_hasher.original_hashes)
         }
-        self.create_table('Comparison', comparison_data)
+
+        df = pd.DataFrame(comparison_data)
+
+        self.tables['Comparison'] = df

@@ -13,15 +13,19 @@ class PerformanceTracker:
         """
         Start the timer on the next mouse click.
 
+        Args:
+
         """
         print("Waiting for the next click to start the timer...")
         mouse.wait(button="left")  # Wait for the next mouse click
         self.start_time = time.time()
-        print("Timer started. Press any key to stop.")
+        print("Timer started...\n Press any key to stop.")
 
     def stop_timer(self):
         """
         Stop the timer (if the timer has started).
+
+        Args:
 
         """
         if self.start_time is not None:
@@ -36,10 +40,11 @@ class PerformanceTracker:
         """
         Track the time until a key is pressed.
 
+        Args:
+
         """
         self.start_timer()
 
-        print("Performance tracking in progress...")
         # Check for key press in a loop
         while True:
             if keyboard.read_hotkey():

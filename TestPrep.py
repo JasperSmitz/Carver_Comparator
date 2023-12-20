@@ -3,35 +3,62 @@ import shutil
 
 
 class TestPrep:
-    def __init__(self, source_folder, destination_folder):
+    def __init__(self, source_folder, destination_folder, fragments, in_order):
         self.source_folder = source_folder
         self.destination_folder = destination_folder
+        self.fragments = fragments
+        self.in_order = in_order
 
-    # Eventually look into replacing this with images.
-    def copy_to_external_drive(self):
+    def fragment_files(self):
         """
-        Copies data from the selected test set over to the external hard drive
+        Fragments the files in a given folder into a given number of fragments using binary read and write
+        functions.
+
+        Args:
 
         """
-        if not os.path.exists(self.source_folder):
-            print(f"Source folder '{self.source_folder}' does not exist.")
-            return
+        files = [f for f in os.listdir(self.source_folder) if os.path.isfile(os.path.join(self.source_folder, f))]
 
-        if not os.path.exists(self.destination_folder):
-            print(f"Destination folder '{self.destination_folder}' does not exist.")
-            return
+        # Create fragments outside the destination folder
+        for file_index, file_name in enumerate(files):
+            file_path = os.path.join(self.source_folder, file_name)
+            with open(file_path, 'rb') as f:
+                total_size = os.path.getsize(file_path)
+                chunk_size = total_size // self.fragments
 
-        print(f"Copying files from '{self.source_folder}' to '{self.destination_folder}'...")
-        for root, dirs, files in os.walk(self.source_folder):
-            for file in files:
-                source_file = os.path.join(root, file)
-                relative_path = os.path.relpath(source_file, self.source_folder)
-                destination_file = os.path.join(self.destination_folder, relative_path)
+                for index in range(self.fragments):
+                    start_pos = chunk_size * index
+                    end_pos = chunk_size * (index + 1) if index < self.fragments - 1 else total_size
 
-                destination_directory = os.path.dirname(destination_file)
-                if not os.path.exists(destination_directory):
-                    os.makedirs(destination_directory)
+                    f.seek(start_pos)
+                    with open(f'fragment_{file_index}_{index}', 'wb') as dat_file:
+                        dat_file.write(f.read(end_pos - start_pos))
 
-                shutil.copy2(source_file, destination_file)
+    def prepare_data(self):
+        """
+        Prepares the data by copying it in-order (eg. fragment_0_0, then fragment_0_1, then fragment_1_0 etc.)
+        or out-of-order (by copying it in the reverse order of in-order)
 
-        print("Files copied successfully.")
+        Args:
+        """
+        self.fragment_files()
+
+        num_files = len(os.listdir(self.source_folder))
+        project_folder = os.getcwd()  # Gets current working directory
+
+        if self.in_order:
+            # Copy files in order
+            for fragment_index in range(self.fragments):
+                for file_index in range(num_files):
+                    file_to_copy = f'fragment_{file_index}_{fragment_index}'
+                    src = os.path.join(project_folder, file_to_copy)
+                    dst = os.path.join(self.destination_folder, file_to_copy)
+                    shutil.move(src, dst)
+        else:
+            # Copy files out of order (reversed in order)
+            for fragment_index in reversed(range(self.fragments)):
+                for file_index in reversed(range(num_files)):
+                    file_to_copy = f'fragment_{file_index}_{fragment_index}'
+                    src = os.path.join(project_folder, file_to_copy)
+                    dst = os.path.join(self.destination_folder, file_to_copy)
+                    shutil.move(src, dst)
