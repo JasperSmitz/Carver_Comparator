@@ -39,13 +39,15 @@ class Reporter:
 
         print(f"Tables exported to '{file_name}'.")
 
-    def create_comparison_table(self, folder_hasher):
+    def create_comparison_table(self, folder_hasher, fragment_hasher):
         """
-        Create a table comparing original hashes with recovered hashes.
+        Create a table comparing original hashes with recovered hashes for both files and fragments.
 
         Args:
-            folder_hasher (FolderHasher): Instance of the FolderHasher class.
+            folder_hasher (FolderHasher): Instance of the FolderHasher class for files.
+            fragment_hasher (FolderHasher): Instance of the FolderHasher class for fragments.
         """
+        # File comparison data
         comparison_data = {
             'File Name': list(folder_hasher.original_hashes.keys()),
             'Original Hash': list(folder_hasher.original_hashes.values()),
@@ -53,10 +55,22 @@ class Reporter:
                 hash_value in folder_hasher.recovered_hashes.values()
                 for hash_value in folder_hasher.original_hashes.values()
             ],
-            'Partially Recovered': [None] * len(folder_hasher.original_hashes),
-            'Not Recovered': [None] * len(folder_hasher.original_hashes)
+            '100% Partially Recovered': [None] * len(folder_hasher.original_hashes),
+            'Partially Recovered': [None] * len(folder_hasher.original_hashes)
         }
 
-        df = pd.DataFrame(comparison_data)
+        # Fragment comparison data
+        fragment_comparison_data = {
+            'File Name': list(fragment_hasher.original_hashes.keys()),
+            'Original Hash': list(fragment_hasher.original_hashes.values()),
+            'Fully Recovered': [
+                hash_value in fragment_hasher.recovered_hashes.values()
+                for hash_value in fragment_hasher.original_hashes.values()
+            ]
+        }
 
-        self.tables['Comparison'] = df
+        df_files = pd.DataFrame(comparison_data)
+        df_fragments = pd.DataFrame(fragment_comparison_data)
+
+        self.tables['Comparison_Files'] = df_files
+        self.tables['Comparison_Fragments'] = df_fragments

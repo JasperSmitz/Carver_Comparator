@@ -6,7 +6,7 @@ import TestPrep
 
 def get_test_set_path():
     while True:
-        test_type = input("Do you want to test baseline or progressive JPEGs?\n0. Baseline\n1. Progressive").lower()
+        test_type = input("Do you want to test baseline or progressive JPEGs?\n0. Baseline\n1. Progressive\n").lower()
         if test_type == "0":
             return "Test set/Baseline set"
         elif test_type == "1":
@@ -30,27 +30,48 @@ def main():
     test_set_path = get_test_set_path()
     folder_hasher = HashingValidator.FolderHasher()
     folder_hasher.hash_folder(test_set_path)
+    fragment_hasher = HashingValidator.FolderHasher()
 
-    fragments = int(input("In how many fragments would you like each file to be split?"))
+    fragments = int(input("In how many fragments would you like each file to be split?\n"))
     in_order = bool(int(input("In-order or out-of-order?\n0. Out-of-order\n1. In-order\n")))
     print("Please make sure the test volume is formatted.")
 
     destination_path = get_destination_path()
     testprep = TestPrep.TestPrep(test_set_path, destination_path, fragments, in_order)
     testprep.prepare_data()
-
+    fragment_hasher.hash_fragments_folder(destination_path)
     input("Please delete the files in the selected drive.\nPress Enter to continue...")
 
     tracker = PerformanceTracker.PerformanceTracker()
     print("Please prepare the carver or data recovery tool so that starting it is one click away.")
-    input("Press Enter to continue...")
-    tracker.track_performance()
 
-    performance_data = {"Tool": [tool_name], "Time": [tracker.elapsed_time]}
+    # Scan Phase
+    input("Press Enter to start the scan phase...")
+    tracker.track_performance()
+    elapsed_time_scan = tracker.elapsed_time_scan
+    elapsed_time_carving = tracker.elapsed_time_carving
+
+    performance_data = {
+        "Tool": [tool_name],
+        "Scan Time": [round(elapsed_time_scan, 2)],
+        "Carving Time": [round(elapsed_time_carving, 2)],
+    }
+
+    if fragments == 0 or fragments == 1:
+        tool_name += "_unfragmented"
+    elif in_order:
+        tool_name += "_in_order_" + str(fragments) + "_frags"
+    elif not in_order:
+        tool_name += "_out_of_order_" + str(fragments) + "_frags"
+
+    input("In case the carver/tool did not let you choose an output folder,"
+          "\nplease copy the output into the output folder now."
+          "\nPress Enter to generate the report.")
 
     reporter = Reporter.Reporter()
     folder_hasher.compare_to_recovered('Test set/output')
-    reporter.create_comparison_table(folder_hasher)
+    fragment_hasher.compare_to_recovered('Test set/output')  # Compare fragment hashes
+    reporter.create_comparison_table(folder_hasher, fragment_hasher)
     reporter.create_table("Tool Performance", performance_data)
     reporter.export_to_excel(tool_name + "_report.xlsx")
 
